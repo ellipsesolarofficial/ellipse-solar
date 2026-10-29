@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=()">
+  <meta name="description" content="Ellipse Solar. A rooftop size from your electricity bill for Jaipur, Bassi, Toonga, Dausa, Lalsot, Sawai Madhopur and Gangapur City. Call or WhatsApp 9216054155.">
+  <meta name="theme-color" content="#141E37">
+  <title>Ellipse Solar</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <header class="top">
+      <button type="button" class="back is-hidden" id="back">Back</button>
+      <a class="brand" href="#welcome">
+        <img src="assets/logo.svg" width="36" height="36" alt="">
+        <span class="brand-name">Ellipse</span>
+      </a>
+      <div class="langs" role="group" aria-label="Language">
+        <button type="button" class="lang" data-lang="hi">हिन्दी</button>
+        <button type="button" class="lang" data-lang="en">EN</button>
+      </div>
+    </header>
+    <div class="progress" id="progress" hidden>
+      <span class="progress-fill" id="progress-fill"></span>
+    </div>
+    <main class="main" id="main"></main>
+    <footer class="dock" id="dock"></footer>
+  </div>
+  <script src="calc.js"></script>
+  <script src="app.js"></script>
+  <noscript>
+    <p class="noscript">Ellipse Solar. <a href="tel:+919216054155">Call 92160 54155</a> · <a href="https://wa.me/919216054155">WhatsApp</a></p>
+  </noscript>
+</body>
+</html>
