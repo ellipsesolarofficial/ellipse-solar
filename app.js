@@ -60,6 +60,9 @@ const ROOFS = [
 const COPY = {
   en: {
     back: "Back",
+    play: "Play",
+    replay: "Play again",
+    introLine: "This is Ellipse Solar. We fit rooftop solar in Jaipur, Bassi, Toonga, Dausa, Lalsot, Sawai Madhopur and Gangapur City. Tell us last month’s bill, and we will show a size. The price is fixed when we visit the roof.",
     start: "See a size",
     next: "Continue",
     call: `Call ${PHONE_DISPLAY}`,
@@ -93,6 +96,9 @@ const COPY = {
   },
   hi: {
     back: "वापस",
+    play: "चलाएँ",
+    replay: "फिर चलाएँ",
+    introLine: "यह एलिप्स सोलर है। हम जयपुर, बस्सी, तूंगा, दौसा, लालसोट, सवाई माधोपुर और गंगापुर सिटी में छत पर सोलर लगाते हैं। पिछले महीने का बिल बताइए, हम साइज़ दिखाएँगे। कीमत छत देखने के बाद पक्की होती है।",
     start: "साइज़ देखें",
     next: "आगे बढ़ें",
     call: `कॉल ${PHONE_DISPLAY}`,
@@ -128,12 +134,15 @@ const COPY = {
 
 const state = {
   lang: "en",
-  screen: "welcome",
+  screen: "intro",
   name: "",
   roof: "",
   area: "",
   bill: 5000,
 };
+
+let narration = null;
+let narrationToken = 0;
 
 const stack = [];
 
@@ -198,14 +207,31 @@ function steps() {
   return ["name", "roof", "area"];
 }
 
+function narrationSrc() {
+  return state.lang === "hi" ? "assets/audio/hi.wav" : "assets/audio/en.wav";
+}
+
+function stopNarration() {
+  narrationToken += 1;
+  if (!narration) return;
+  const clip = narration;
+  narration = null;
+  clip.onended = null;
+  clip.pause();
+  clip.removeAttribute("src");
+  clip.load();
+}
+
 function go(screen) {
+  if (state.screen === "intro") stopNarration();
   stack.push(state.screen);
   state.screen = screen;
   render();
 }
 
 function back() {
-  state.screen = stack.pop() || "welcome";
+  stopNarration();
+  state.screen = stack.pop() || "intro";
   render();
 }
 
@@ -227,7 +253,7 @@ function contactPack() {
 function render() {
   const copy = t();
   document.documentElement.lang = state.lang === "hi" ? "hi" : "en";
-  const hideBack = state.screen === "welcome";
+  const hideBack = state.screen === "intro";
   backBtn.classList.toggle("is-hidden", hideBack);
   backBtn.tabIndex = hideBack ? -1 : 0;
   backBtn.setAttribute("aria-hidden", hideBack ? "true" : "false");
@@ -243,7 +269,7 @@ function render() {
   if (index >= 0) progressFill.style.width = `${((index + 1) / order.length) * 100}%`;
 
   const view = {
-    welcome: viewWelcome,
+    intro: viewIntro,
     name: viewName,
     roof: viewRoof,
     area: viewArea,
@@ -259,30 +285,54 @@ function render() {
   bind(html.bind);
 }
 
-function viewWelcome(copy) {
-  const towns = GROUPS.map((group) => {
-    const names = group.areas.map((area) => area[state.lang]).join(", ");
-    return `<li><strong>${esc(group[state.lang])}</strong><span>${esc(names)}</span></li>`;
-  }).join("");
-
+function viewIntro(copy) {
   return {
     main: `
-      <div class="lockup">
-        <img src="assets/logo.svg" width="64" height="64" alt="">
-        <div>
-          <div class="lockup-name">Ellipse</div>
-          <div class="lockup-solar">SOLAR</div>
-        </div>
+      <div class="stage">
+        <video id="intro-video" playsinline loop muted preload="auto" src="assets/intro.mp4"></video>
+        <button type="button" class="play" id="play">
+          <span class="play-icon" aria-hidden="true"></span>
+          <span id="play-label">${esc(copy.play)}</span>
+        </button>
       </div>
-      <h1>${esc(copy.welcomeTitle)}</h1>
-      <p class="lead">${esc(copy.welcomeLead)}</p>
-      <ul class="towns">${towns}</ul>
+      <p class="lead intro-line">${esc(copy.introLine)}</p>
     `,
     dock: `<button type="button" class="btn btn-primary" id="start">${esc(copy.start)}</button>`,
     bind() {
+      const video = document.getElementById("intro-video");
+      const play = document.getElementById("play");
+      video.muted = true;
+      play.addEventListener("click", () => startIntro(video, play));
       document.getElementById("start").addEventListener("click", () => go("name"));
     },
   };
+}
+
+function startIntro(video, play) {
+  const copy = t();
+  const label = document.getElementById("play-label");
+  stopNarration();
+  const token = narrationToken;
+  narration = new Audio(narrationSrc());
+  play.classList.add("is-hidden");
+  if (label) label.textContent = copy.play;
+  video.currentTime = 0;
+  const started = Promise.all([
+    video.play(),
+    narration.play(),
+  ]);
+  narration.onended = () => {
+    if (token !== narrationToken) return;
+    const button = document.getElementById("play");
+    const replay = document.getElementById("play-label");
+    if (!button || !replay) return;
+    replay.textContent = t().replay;
+    button.classList.remove("is-hidden");
+  };
+  started.catch(() => {
+    if (token !== narrationToken) return;
+    play.classList.remove("is-hidden");
+  });
 }
 
 function viewName(copy) {
@@ -461,15 +511,21 @@ document.getElementById("back").addEventListener("click", back);
 
 document.querySelector(".brand").addEventListener("click", (event) => {
   event.preventDefault();
+  stopNarration();
   stack.length = 0;
-  state.screen = "welcome";
+  state.screen = "intro";
   render();
 });
 
 document.querySelectorAll(".lang").forEach((button) => {
   button.addEventListener("click", () => {
+    if (button.dataset.lang === state.lang) return;
+    const playing = Boolean(narration && !narration.paused);
     state.lang = button.dataset.lang;
     render();
+    if (playing && state.screen === "intro") {
+      startIntro(document.getElementById("intro-video"), document.getElementById("play"));
+    }
   });
 });
 
