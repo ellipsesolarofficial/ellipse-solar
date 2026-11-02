@@ -2,68 +2,23 @@ const PHONE_DISPLAY = "92160 54155";
 const TEL = "tel:+919216054155";
 const WA = "919216054155";
 
-const GROUPS = [
-  {
-    id: "jaipur",
-    en: "Jaipur district",
-    hi: "जयपुर जिला",
-    areas: [
-      { id: "jaipur", en: "Jaipur", hi: "जयपुर" },
-      { id: "bassi", en: "Bassi", hi: "बस्सी" },
-      { id: "toonga", en: "Toonga (Tunga)", hi: "तूंगा (Tunga)" },
-    ],
-  },
-  {
-    id: "dausa",
-    en: "Dausa district",
-    hi: "दौसा जिला",
-    areas: [
-      { id: "dausa", en: "Dausa", hi: "दौसा" },
-      { id: "lalsot", en: "Lalsot", hi: "लालसोट" },
-    ],
-  },
-  {
-    id: "sawai",
-    en: "Sawai Madhopur district",
-    hi: "सवाई माधोपुर जिला",
-    areas: [
-      { id: "sawai", en: "Sawai Madhopur", hi: "सवाई माधोपुर" },
-      { id: "gangapur", en: "Gangapur City", hi: "गंगापुर सिटी" },
-    ],
-  },
-];
-
-const ROOFS = [
-  {
-    id: "home",
-    en: "Home rooftop",
-    hi: "घर की छत",
-    noteEn: "House or villa",
-    noteHi: "मकान या विला",
-  },
-  {
-    id: "society",
-    en: "Housing society",
-    hi: "सोसाइटी",
-    noteEn: "Lifts, pumps, common lights",
-    noteHi: "लिफ्ट, पंप, कॉमन लाइट",
-  },
-  {
-    id: "business",
-    en: "Shop, office, or factory",
-    hi: "दुकान, ऑफिस या फैक्टरी",
-    noteEn: "Hospitals and larger plants too",
-    noteHi: "अस्पताल और बड़े प्लांट भी",
-  },
+const AREAS = [
+  { id: "jaipur", en: "Jaipur", hi: "जयपुर" },
+  { id: "dausa", en: "Dausa", hi: "दौसा" },
+  { id: "lalsot", en: "Lalsot", hi: "लालसोट" },
+  { id: "sawai", en: "Sawai Madhopur", hi: "सवाई माधोपुर" },
+  { id: "gangapur", en: "Gangapur City", hi: "गंगापुर सिटी" },
+  { id: "toonga", en: "Toonga (Tunga)", hi: "तूंगा (Tunga)" },
+  { id: "bassi", en: "Bassi", hi: "बस्सी" },
 ];
 
 const COPY = {
   en: {
     back: "Back",
-    play: "Play",
-    replay: "Play again",
-    introLine: "This is Ellipse Solar. We fit rooftop solar in Jaipur, Bassi, Toonga, Dausa, Lalsot, Sawai Madhopur and Gangapur City. Tell us last month’s bill, and we will show a size. The price is fixed when we visit the roof.",
-    start: "See a size",
+    play: "Ready to Play?",
+    calc: "Calculate Now",
+    aboutTitle: "About you",
+    mobilePlaceholder: "Mobile number",
     next: "Continue",
     call: `Call ${PHONE_DISPLAY}`,
     wa: "WhatsApp",
@@ -73,7 +28,8 @@ const COPY = {
     namePlaceholder: "Full name",
     roofTitle: "Which roof is it?",
     areaTitle: "Where is the site?",
-    billTitle: "Last month’s electricity bill",
+    areaTitle: "Where is the home?",
+    billTitle: "Monthly electricity bill",
     perKw: (n) => `₹${inr(n)} per kW`,
     subsidyOn: "Rajasthan adds ₹17,000 on a plant up to 5 kW.",
     subsidyOff: "Above 5 kW, the ₹17,000 Rajasthan subsidy does not apply. Central subsidy stays ₹78,000.",
@@ -90,16 +46,14 @@ const COPY = {
     visitTitle: (area) => `A visit in ${area}`,
     visitBody: (roof, area) => `${roof} in ${area} is sized on the roof. Call or WhatsApp and we will fix a time.`,
     waHome: (s) =>
-      `Hello Ellipse Solar. I am ${s.name}. Home rooftop in ${s.area}. Last month bill ₹${inr(s.bill)}. Guide: ${formatKw(s.est.kw)} kW, plant cost ₹${inr(s.est.gross)}, subsidy ₹${inr(s.est.subsidy)}, about ₹${inr(s.est.net)} after subsidy. Please book a free visit.`,
-    waVisit: (s) =>
-      `Hello Ellipse Solar. I am ${s.name}. ${s.roof} in ${s.area}. Please book a free visit.`,
+      `Hello Ellipse Solar. I am ${s.name}. Mobile ${s.mobile}. Home in ${s.area}. Monthly bill ₹${inr(s.bill)}. Guide: ${formatKw(s.est.kw)} kW, plant cost ₹${inr(s.est.gross)}, subsidy ₹${inr(s.est.subsidy)}, about ₹${inr(s.est.net)} after subsidy. Please call me.`,
   },
   hi: {
     back: "वापस",
-    play: "चलाएँ",
-    replay: "फिर चलाएँ",
-    introLine: "यह एलिप्स सोलर है। हम जयपुर, बस्सी, तूंगा, दौसा, लालसोट, सवाई माधोपुर और गंगापुर सिटी में छत पर सोलर लगाते हैं। पिछले महीने का बिल बताइए, हम साइज़ दिखाएँगे। कीमत छत देखने के बाद पक्की होती है।",
-    start: "साइज़ देखें",
+    play: "Ready to Play?",
+    calc: "कैलकुलेट करें",
+    aboutTitle: "आपके बारे में",
+    mobilePlaceholder: "मोबाइल नंबर",
     next: "आगे बढ़ें",
     call: `कॉल ${PHONE_DISPLAY}`,
     wa: "WhatsApp",
@@ -109,7 +63,8 @@ const COPY = {
     namePlaceholder: "पूरा नाम",
     roofTitle: "कौन सी छत है?",
     areaTitle: "साइट कहाँ है?",
-    billTitle: "पिछले महीने का बिजली बिल",
+    areaTitle: "घर कहाँ है?",
+    billTitle: "मासिक बिजली बिल",
     perKw: (n) => `₹${inr(n)} प्रति kW`,
     subsidyOn: "5 kW तक राजस्थान की ₹17,000 सब्सिडी लगती है।",
     subsidyOff: "5 kW से ऊपर राजस्थान की ₹17,000 सब्सिडी नहीं मिलती। केंद्रीय सब्सिडी ₹78,000 रहती है।",
@@ -126,9 +81,7 @@ const COPY = {
     visitTitle: (area) => `${area} में विज़िट`,
     visitBody: (roof, area) => `${area} में ${roof} की साइज़ छत पर तय होती है। कॉल या WhatsApp पर समय रखेंगे।`,
     waHome: (s) =>
-      `नमस्ते Ellipse Solar. मैं ${s.name} हूँ। ${s.area} में घर की छत। पिछले महीने का बिल ₹${inr(s.bill)}। अंदाज़ा: ${formatKw(s.est.kw)} kW, प्लांट कीमत ₹${inr(s.est.gross)}, सब्सिडी ₹${inr(s.est.subsidy)}, सब्सिडी के बाद करीब ₹${inr(s.est.net)}। फ्री विज़िट बुक कीजिए।`,
-    waVisit: (s) =>
-      `नमस्ते Ellipse Solar. मैं ${s.name} हूँ। ${s.area} में ${s.roof}। फ्री विज़िट बुक कीजिए।`,
+      `नमस्ते Ellipse Solar. मैं ${s.name} हूँ। मोबाइल ${s.mobile}। ${s.area} में घर। मासिक बिल ₹${inr(s.bill)}। अंदाज़ा: ${formatKw(s.est.kw)} kW, प्लांट कीमत ₹${inr(s.est.gross)}, सब्सिडी ₹${inr(s.est.subsidy)}, सब्सिडी के बाद करीब ₹${inr(s.est.net)}। कृपया कॉल कीजिए।`,
   },
 };
 
@@ -136,13 +89,14 @@ const state = {
   lang: "en",
   screen: "intro",
   name: "",
-  roof: "",
+  mobile: "",
   area: "",
   bill: 5000,
 };
 
 let narration = null;
 let narrationToken = 0;
+let introTimer = 0;
 
 const stack = [];
 
@@ -180,11 +134,7 @@ function esc(value) {
 }
 
 function areaById(id) {
-  for (const group of GROUPS) {
-    const found = group.areas.find((area) => area.id === id);
-    if (found) return found;
-  }
-  return null;
+  return AREAS.find((area) => area.id === id) || null;
 }
 
 function areaLabel() {
@@ -192,27 +142,31 @@ function areaLabel() {
   return area ? area[state.lang] : "";
 }
 
-function roofItem() {
-  return ROOFS.find((roof) => roof.id === state.roof);
-}
-
-function roofLabel() {
-  const roof = roofItem();
-  return roof ? roof[state.lang] : "";
-}
-
 function steps() {
-  if (state.roof === "home") return ["name", "roof", "area", "bill", "result"];
-  if (state.roof) return ["name", "roof", "area", "visit"];
-  return ["name", "roof", "area"];
+  return ["about", "area", "bill", "result"];
+}
+
+function mobileOk(value) {
+  return /^\d{10}$/.test(value);
+}
+
+function aboutReady() {
+  return state.name.trim().length >= 2 && mobileOk(state.mobile);
 }
 
 function narrationSrc() {
-  return state.lang === "hi" ? "assets/audio/hi.wav" : "assets/audio/en.wav";
+  return state.lang === "hi" ? "assets/audio/hi.mp3" : "assets/audio/en.mp3";
+}
+
+function clearIntroTimer() {
+  if (!introTimer) return;
+  clearTimeout(introTimer);
+  introTimer = 0;
 }
 
 function stopNarration() {
   narrationToken += 1;
+  clearIntroTimer();
   if (!narration) return;
   const clip = narration;
   narration = null;
@@ -240,18 +194,18 @@ function waLink(text) {
 }
 
 function contactPack() {
-  const est = state.roof === "home" ? estimate(state.bill) : null;
   return {
     name: state.name.trim(),
+    mobile: state.mobile,
     area: areaLabel(),
-    roof: roofLabel(),
     bill: state.bill,
-    est,
+    est: estimate(state.bill),
   };
 }
 
 function render() {
   const copy = t();
+  document.querySelector(".app").classList.toggle("is-film", state.screen === "intro");
   document.documentElement.lang = state.lang === "hi" ? "hi" : "en";
   const hideBack = state.screen === "intro";
   backBtn.classList.toggle("is-hidden", hideBack);
@@ -270,12 +224,10 @@ function render() {
 
   const view = {
     intro: viewIntro,
-    name: viewName,
-    roof: viewRoof,
+    about: viewAbout,
     area: viewArea,
     bill: viewBill,
     result: viewResult,
-    visit: viewVisit,
   }[state.screen];
 
   const html = view(copy);
@@ -288,107 +240,122 @@ function render() {
 function viewIntro(copy) {
   return {
     main: `
-      <div class="stage">
-        <video id="intro-video" playsinline loop muted preload="auto" src="assets/intro.mp4"></video>
+      <div class="film">
+        <video id="intro-video" playsinline loop muted preload="auto" src="assets/friends.mp4"></video>
+        <button type="button" class="film-brand" id="replay">
+          <img src="assets/logo.svg" alt="">
+          <span>Ellipse</span>
+        </button>
         <button type="button" class="play" id="play">
           <span class="play-icon" aria-hidden="true"></span>
           <span id="play-label">${esc(copy.play)}</span>
         </button>
+        <div class="film-choices is-hidden" id="film-choices">
+          <button type="button" class="film-lang" id="pick-hi">हिन्दी</button>
+          <button type="button" class="film-lang" id="pick-en">English</button>
+        </div>
+        <button type="button" class="film-calc is-hidden" id="calc-now">${esc(copy.calc)}</button>
       </div>
-      <p class="lead intro-line">${esc(copy.introLine)}</p>
     `,
-    dock: `<button type="button" class="btn btn-primary" id="start">${esc(copy.start)}</button>`,
+    dock: "",
     bind() {
       const video = document.getElementById("intro-video");
-      const play = document.getElementById("play");
       video.muted = true;
-      play.addEventListener("click", () => startIntro(video, play));
-      document.getElementById("start").addEventListener("click", () => go("name"));
+      document.getElementById("play").addEventListener("click", () => startFilm(video));
+      document.getElementById("replay").addEventListener("click", () => startFilm(video));
+      document.getElementById("pick-hi").addEventListener("click", () => playPitch("hi"));
+      document.getElementById("pick-en").addEventListener("click", () => playPitch("en"));
+      document.getElementById("calc-now").addEventListener("click", () => go("about"));
     },
   };
 }
 
-function startIntro(video, play) {
-  const copy = t();
-  const label = document.getElementById("play-label");
+function startFilm(video) {
   stopNarration();
   const token = narrationToken;
-  narration = new Audio(narrationSrc());
-  play.classList.add("is-hidden");
-  if (label) label.textContent = copy.play;
+  document.getElementById("play")?.classList.add("is-hidden");
+  document.getElementById("film-choices")?.classList.add("is-hidden");
+  document.getElementById("calc-now")?.classList.add("is-hidden");
   video.currentTime = 0;
-  const started = Promise.all([
-    video.play(),
-    narration.play(),
-  ]);
+  video.play().catch(() => {
+    document.getElementById("play")?.classList.remove("is-hidden");
+  });
+  introTimer = window.setTimeout(() => {
+    if (token !== narrationToken) return;
+    document.getElementById("film-choices")?.classList.remove("is-hidden");
+  }, 2800);
+}
+
+function playPitch(lang) {
+  stopNarration();
+  const token = narrationToken;
+  state.lang = lang;
+  document.documentElement.lang = lang === "hi" ? "hi" : "en";
+  document.querySelectorAll(".lang").forEach((button) => {
+    button.setAttribute("aria-pressed", String(button.dataset.lang === state.lang));
+  });
+  document.getElementById("film-choices")?.classList.add("is-hidden");
+  const calc = document.getElementById("calc-now");
+  if (calc) {
+    calc.textContent = t().calc;
+    calc.classList.add("is-hidden");
+  }
+  narration = new Audio(narrationSrc());
   narration.onended = () => {
     if (token !== narrationToken) return;
-    const button = document.getElementById("play");
-    const replay = document.getElementById("play-label");
-    if (!button || !replay) return;
-    replay.textContent = t().replay;
-    button.classList.remove("is-hidden");
+    document.getElementById("calc-now")?.classList.remove("is-hidden");
   };
-  started.catch(() => {
+  narration.play().catch(() => {
     if (token !== narrationToken) return;
-    play.classList.remove("is-hidden");
+    document.getElementById("calc-now")?.classList.remove("is-hidden");
   });
 }
 
-function viewName(copy) {
-  const ready = state.name.trim().length >= 2;
+function viewAbout(copy) {
+  const ready = aboutReady();
   return {
     main: `
-      <h1>${esc(copy.nameTitle)}</h1>
-      <label class="field">
-        <input id="name" type="text" name="name" autocomplete="name" enterkeyhint="next" maxlength="60" placeholder="${esc(copy.namePlaceholder)}" value="${esc(state.name)}">
-      </label>
+      <h1>${esc(copy.aboutTitle)}</h1>
+      <div class="fields">
+        <label class="field">
+          <span class="field-label">${esc(copy.nameTitle)}</span>
+          <input id="name" type="text" name="name" autocomplete="name" enterkeyhint="next" maxlength="60" placeholder="${esc(copy.namePlaceholder)}" value="${esc(state.name)}">
+        </label>
+        <label class="field">
+          <span class="field-label">${esc(copy.mobilePlaceholder)}</span>
+          <input id="mobile" type="tel" name="tel" autocomplete="tel" inputmode="numeric" enterkeyhint="next" maxlength="10" placeholder="${esc(copy.mobilePlaceholder)}" value="${esc(state.mobile)}">
+        </label>
+      </div>
     `,
     dock: `<button type="button" class="btn btn-primary" id="next" ${ready ? "" : "disabled"}>${esc(copy.next)}</button>`,
     bind() {
-      const input = document.getElementById("name");
+      const name = document.getElementById("name");
+      const mobile = document.getElementById("mobile");
       const next = document.getElementById("next");
-      input.addEventListener("input", () => {
-        state.name = input.value;
-        next.disabled = state.name.trim().length < 2;
-      });
+      const sync = () => {
+        state.name = name.value;
+        state.mobile = mobile.value.replace(/\D/g, "").slice(0, 10);
+        if (mobile.value !== state.mobile) mobile.value = state.mobile;
+        next.disabled = !aboutReady();
+      };
+      name.addEventListener("input", sync);
+      mobile.addEventListener("input", sync);
       next.addEventListener("click", () => {
-        if (state.name.trim().length >= 2) go("roof");
-      });
-      input.addEventListener("keydown", (event) => {
-        if (event.key === "Enter" && state.name.trim().length >= 2) go("roof");
-      });
-    },
-  };
-}
-
-function viewRoof(copy) {
-  const choices = ROOFS.map((roof) => choiceButton(roof.id, roof[state.lang], roof[state.lang === "hi" ? "noteHi" : "noteEn"], state.roof === roof.id)).join("");
-  return {
-    main: `<h1>${esc(copy.roofTitle)}</h1><div class="choices" role="group">${choices}</div>`,
-    dock: `<button type="button" class="btn btn-primary" id="next" ${state.roof ? "" : "disabled"}>${esc(copy.next)}</button>`,
-    bind() {
-      bindChoices("roof");
-      document.getElementById("next").addEventListener("click", () => {
-        if (state.roof) go("area");
+        if (aboutReady()) go("area");
       });
     },
   };
 }
 
 function viewArea(copy) {
-  const groups = GROUPS.map((group) => {
-    const choices = group.areas.map((area) => choiceButton(area.id, area[state.lang], "", state.area === area.id)).join("");
-    return `<p class="group-label">${esc(group[state.lang])}</p>${choices}`;
-  }).join("");
+  const choices = AREAS.map((area) => choiceButton(area.id, area[state.lang], "", state.area === area.id)).join("");
   return {
-    main: `<h1>${esc(copy.areaTitle)}</h1>${groups}`,
+    main: `<h1>${esc(copy.areaTitle)}</h1><div class="choices" role="group">${choices}</div>`,
     dock: `<button type="button" class="btn btn-primary" id="next" ${state.area ? "" : "disabled"}>${esc(copy.next)}</button>`,
     bind() {
       bindChoices("area");
       document.getElementById("next").addEventListener("click", () => {
-        if (!state.area) return;
-        go(state.roof === "home" ? "bill" : "visit");
+        if (state.area) go("bill");
       });
     },
   };
@@ -460,19 +427,6 @@ function viewResult(copy) {
   };
 }
 
-function viewVisit(copy) {
-  const pack = contactPack();
-  return {
-    main: `
-      <h1>${esc(copy.visitTitle(pack.area))}</h1>
-      <p class="lead">${esc(copy.visitBody(pack.roof, pack.area))}</p>
-      <p class="fine">${esc(copy.priceNote)}</p>
-    `,
-    dock: contactDock(copy, waLink(copy.waVisit(pack))),
-    bind() {},
-  };
-}
-
 function contactDock(copy, whatsapp) {
   return `
     <a class="btn btn-navy" href="${TEL}">${esc(copy.call)}</a>
@@ -520,12 +474,9 @@ document.querySelector(".brand").addEventListener("click", (event) => {
 document.querySelectorAll(".lang").forEach((button) => {
   button.addEventListener("click", () => {
     if (button.dataset.lang === state.lang) return;
-    const playing = Boolean(narration && !narration.paused);
+    if (state.screen === "intro") return;
     state.lang = button.dataset.lang;
     render();
-    if (playing && state.screen === "intro") {
-      startIntro(document.getElementById("intro-video"), document.getElementById("play"));
-    }
   });
 });
 
